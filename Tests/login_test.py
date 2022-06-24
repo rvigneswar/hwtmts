@@ -1,7 +1,12 @@
 from scripts import login
 import pytest
+import os
 
-driver_path = "/Users/admin/FTC_Solar/Legacy/Hardware_team_test_Suite/driver/chromedriver"
+os_type = os.name
+if os_type == "nt":
+    driver_path = str(os.getcwd()) + "/driver/chromedriver.exe"
+elif os_type == "posix":
+    driver_path = str(os.getcwd()) + "/driver/chromedriver"
 url = "http://172.16.0.3"
 admin_xpath = '//*[@id="menu-username"]/div[3]/ul/li[1]'
 admin_pass = "Admin"
