@@ -1,13 +1,13 @@
 from scripts import login
 import pytest
-import os
+import os, unittest
 
 os_type = os.name
 if os_type == "nt":
     driver_path = str(os.getcwd()) + "/driver/chromedriver.exe"
 elif os_type == "posix":
     driver_path = str(os.getcwd()) + "/driver/chromedriver"
-url = "http://172.16.0.3"
+url = "http://192.168.95.11"
 admin_xpath = '//*[@id="menu-username"]/div[3]/ul/li[1]'
 admin_pass = "Admin"
 sw_version = "2.7.0.29"
@@ -20,7 +20,7 @@ s_sensor = "Disabled"
 f_sensor = "Disabled"
 host = url[7:]
 port = 22
-username = 'pi'
+username = 'torizon'
 password = 'sunshine'
 location = "Central"
 
@@ -87,6 +87,13 @@ def test_dashboard():
     assert tracker_data == 'Add Trackers'
 
 
+def test_zigbee_pan_id():
+    login.initialize(driver_path, url)
+    login.login(admin_xpath, admin_pass)
+    result = login.zigbee_pad_ids()
+    assert result
+
+
 def test_sensor_page():
     login.initialize(driver_path, url)
     login.login(admin_xpath, admin_pass)
@@ -103,6 +110,13 @@ def test_general_settings():
     assert p_name == plant
     assert z_name == zone
     assert loc == location
+
+
+def test_dynamic_ip():
+    login.initialize(driver_path, url)
+    login.login(admin_xpath, admin_pass)
+    d_ip = login.ethernet_settings()
+    assert d_ip
 
 
 def test_zigbee_settings():
@@ -129,3 +143,20 @@ def test_time_settings():
     assert ntp_url == "0.debian.pool.ntp.org"
 
 
+def test_board_temp():
+    login.initialize(driver_path, url)
+    login.login(admin_xpath, admin_pass)
+    print(login.board_temp()+" Cel")
+
+
+def test_disk_ram_used():
+    print(login.disk_usage(host, port, username, password))
+    print(login.ram_usage(host, port, username, password))
+
+
+def test_checking_sd_card():
+    login.checking_sd_card(host, port, username, password)
+
+
+def test_bluetooth():
+    login.checking_bluetooth(host, port, username, password)

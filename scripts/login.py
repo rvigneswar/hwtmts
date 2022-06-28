@@ -2,12 +2,11 @@ import platform
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import time, subprocess, platform, paramiko
-
+import time, subprocess, platform, paramiko, os
 
 wait_time = 3
 driver_path = "/Users/admin/FTC_Solar/Legacy/Hardware_team_test_Suite/driver/chromedriver"
-url = "http://172.16.0.3"
+url = "http://192.168.95.11"
 admin_pass = "Admin"
 admin_xpath = '//*[@id="menu-username"]/div[3]/ul/li[1]'
 
@@ -55,7 +54,7 @@ def get_macaddrs(host, port, uname, passwd):
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(host, port, uname, passwd)
     stdin, stdout, stderr = ssh.exec_command(command)
-    ssid = "voyager_"+stdout.readline().rstrip()
+    ssid = "voyager_" + stdout.readline().rstrip()
     return ssid
 
 
@@ -107,28 +106,36 @@ def dashboard():
     zone_id = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/header/div/div[2]/div[1]/h6').text
     plant_id = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/header/div/div[2]/div[2]/h6').text
     time_stamp = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/header/div/div[3]/h6').text
-    wind_sensor = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[2]/div/div[2]/div[2]/div/div/div[2]/div[2]/h6').text
-    snow_sensor = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[2]/div/div[2]/div[3]/div/div/div[2]/div[2]/h6').text
-    flood_sensor = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[2]/div/div[2]/div[4]/div/div/div[2]/div[2]/h6').text
-    driver.implicitly_wait(wait_time*1000)
+    wind_sensor = driver.find_element(By.XPATH,
+                                      '//*[@id="root"]/div/div/div[1]/main/div[2]/div/div[2]/div[2]/div/div/div[2]/div[2]/h6').text
+    snow_sensor = driver.find_element(By.XPATH,
+                                      '//*[@id="root"]/div/div/div[1]/main/div[2]/div/div[2]/div[3]/div/div/div[2]/div[2]/h6').text
+    flood_sensor = driver.find_element(By.XPATH,
+                                       '//*[@id="root"]/div/div/div[1]/main/div[2]/div/div[2]/div[4]/div/div/div[2]/div[2]/h6').text
+    driver.implicitly_wait(wait_time * 1000)
     for i in range(2, 7):
-        driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a['+str(i)+']/button').click()
-        time.sleep(wait_time+2)
-    driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[1]/button').click()
+        driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[' + str(
+            i) + ']/button').click()
+        time.sleep(wait_time + 2)
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[1]/button').click()
     time.sleep(wait_time)
     add_tracker = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/button[1]').text
     driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/header/div/button[2]').click()
-    driver.implicitly_wait(wait_time*1000)
+    driver.implicitly_wait(wait_time * 1000)
     driver.find_element(By.XPATH, '//*[@id="simple-menu"]/div[3]/ul/li[1]').click()
-    user_checking = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div[1]/div/div/div/div[1]/h6').text
+    user_checking = driver.find_element(By.XPATH,
+                                        '//*[@id="root"]/div/div/div[1]/main/div[1]/div[1]/div/div/div/div[1]/h6').text
     driver.close()
     return zone_id, plant_id, time_stamp, wind_sensor, snow_sensor, flood_sensor, user_checking, add_tracker
 
 
 def sensor_page():
-    driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[4]/button').click()
-    driver.implicitly_wait(wait_time*1000)
-    sensors_lst = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div[2]/div/table/tbody/tr/td[3]')
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[4]/button').click()
+    driver.implicitly_wait(wait_time * 1000)
+    sensors_lst = driver.find_elements(By.XPATH,
+                                       '//*[@id="root"]/div/div/div[1]/main/div[1]/div[2]/div/table/tbody/tr/td[3]')
     sensors = []
     for sensor in sensors_lst:
         sensors.append(sensor.text)
@@ -137,47 +144,158 @@ def sensor_page():
 
 
 def general_settings():
-    driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[3]/button').click()
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[3]/button').click()
     time.sleep(wait_time)
-    plant_name = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[1]/div[2]/div/input').get_attribute("value")
-    zone_name = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[2]/div/div[2]/div/input').get_attribute("value")
-    location = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[1]/div[6]/div/input').get_attribute("value")
+    plant_name = driver.find_element(By.XPATH,
+                                     '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[1]/div[2]/div/input').get_attribute(
+        "value")
+    zone_name = driver.find_element(By.XPATH,
+                                    '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[2]/div/div[2]/div/input').get_attribute(
+        "value")
+    location = driver.find_element(By.XPATH,
+                                   '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[1]/div[6]/div/input').get_attribute(
+        "value")
     driver.close()
     return plant_name, zone_name, location
 
 
 def zigbee_settings():
-    driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[3]/button').click()
-    driver.implicitly_wait(wait_time*1000)
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[3]/button').click()
+    driver.implicitly_wait(wait_time * 1000)
     driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/header/div/div/div/button[2]').click()
     time.sleep(wait_time)
-    periodic_request = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div/div[1]/div[2]/div/input').get_attribute("value")
-    heartbeat = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div/div[2]/div/div[2]/div/input').get_attribute("value")
+    periodic_request = driver.find_element(By.XPATH,
+                                           '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div/div[1]/div[2]/div/input').get_attribute(
+        "value")
+    heartbeat = driver.find_element(By.XPATH,
+                                    '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div/div[2]/div/div[2]/div/input').get_attribute(
+        "value")
     driver.close()
     return periodic_request, heartbeat
 
 
+def ethernet_settings():
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[3]/button').click()
+    driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/header/div/div/div/button[3]').click()
+    dynamic_ip = driver.find_element(By.XPATH,
+                                     '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[2]/div[6]/div/input').get_attribute(
+        "value")
+    driver.close()
+    if dynamic_ip is None:
+        return False
+    else:
+        return True
+
+
 def stow_settings():
-    driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[3]/button').click()
-    driver.implicitly_wait(wait_time*1000)
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[3]/button').click()
+    driver.implicitly_wait(wait_time * 1000)
     driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/header/div/div/div/button[4]').click()
     time.sleep(wait_time)
-    wind_speed = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[1]/div[2]/div/input').get_attribute("value")
-    snow_max = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[2]/div[2]/div/input').get_attribute("value")
-    flood_max = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[3]/div[2]/div/input').get_attribute("value")
+    wind_speed = driver.find_element(By.XPATH,
+                                     '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[1]/div[2]/div/input').get_attribute(
+        "value")
+    snow_max = driver.find_element(By.XPATH,
+                                   '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[2]/div[2]/div/input').get_attribute(
+        "value")
+    flood_max = driver.find_element(By.XPATH,
+                                    '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[3]/div[2]/div/input').get_attribute(
+        "value")
     driver.close()
     return wind_speed, snow_max, flood_max
 
 
 def time_settings():
-    driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[3]/button').click()
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[3]/button').click()
     driver.implicitly_wait(wait_time * 1000)
     driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/header/div/div/div/button[5]').click()
     time.sleep(wait_time)
-    ntp_server = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div/div/ul/li[1]/div[1]').text
+    ntp_server = driver.find_element(By.XPATH,
+                                     '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div/div/ul/li[1]/div[1]').text
     driver.close()
     return ntp_server
 
+
+def board_temp():
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[3]/button').click()
+    driver.implicitly_wait(wait_time * 3000)
+    driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/header/div/div/div/button[7]').click()
+    driver.implicitly_wait(wait_time * 3000)
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[1]/div/div/div/div/button[2]').click()
+    driver.implicitly_wait(wait_time * 3000)
+    temp = driver.find_element(By.XPATH,
+                               '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[2]/div/div[2]/div[3]/div/div[2]/h2').text
+    driver.close()
+    return temp
+
+
+def disk_usage(host, port, uname, passwd):
+    command = "df -h | grep /dev/disk/by-label/otaroot | awk '{print $3}'"
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, port, uname, passwd)
+    stdin, stdout, stderr = ssh.exec_command(command)
+    return stdout.readline()
+
+
+def ram_usage(host, port, uname, passwd):
+    command = "free -mh | grep Mem | awk '{print $3}'"
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, port, uname, passwd)
+    stdin, stdout, stderr = ssh.exec_command(command)
+    return stdout.readline()
+
+
+def zigbee_pad_ids():
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[2]/button').click()
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/main/div[1]/header/div/div/div/div/div/button[2]').click()
+    time.sleep(3)
+    pan_id_1 = driver.find_element(By.XPATH, '//*[@id="scanParameter"]').get_attribute("value")
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[1]/div/div/div/div/button[2]').click()
+    time.sleep(3)
+    pan_id_2 = driver.find_element(By.XPATH, '//*[@id="scanParameter"]').get_attribute("value")
+    driver.close()
+    if bool(pan_id_1) and bool(pan_id_2):
+        return True
+    else:
+        return False
+
+
+def checking_sd_card(host, port, uname, passwd):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, port, uname, passwd)
+    stdin, stdout, stderr = ssh.exec_command("ls /dev/")
+    output = stdout.readlines()
+    for line in output:
+        if "mmcblk1" in line.split('\n'):
+            return True
+    else:
+        return False
+
+
+def checking_bluetooth(host, port, uname, passwd):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, port, uname, passwd)
+    stdin, stdout, stderr = ssh.exec_command("dmesg")
+    output = stdout.readlines()
+    for line in output:
+        if "Blue" in line.split('\n'):
+            return True
+        else:
+            return False
 
 def row_controller():
     driver.find_element(By.XPATH,
@@ -200,9 +318,13 @@ def row_controller():
 
 # initialize(driver_path, url)
 # login(admin_xpath, admin_pass)
+# print(zigbee_pad_ids())
 # print(get_macaddrs("192.168.0.112", 22, "torizon", "sunshine"))
 # print(hotspot_checking())
 # print(checking_alerts())
 # print(dashboard())
 # print(sensor_page())
 # print(general_settings())
+# print(disk_usage("192.168.95.11", 22, "torizon", "sunshine"))
+# print(ram_usage("192.168.95.11", 22, "torizon", "sunshine"))
+print(checking_sd_card("192.168.95.11", 22, "torizon", "sunshine"))
