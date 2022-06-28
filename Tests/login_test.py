@@ -10,10 +10,10 @@ elif os_type == "posix":
 url = "http://192.168.95.11"
 admin_xpath = '//*[@id="menu-username"]/div[3]/ul/li[1]'
 admin_pass = "Admin"
-sw_version = "2.7.0.29"
-hw_version = "1.00.000"
-zone = "ZCVignesh"
-plant = "VigneshPlant"
+sw_version = "3.0.0"
+hw_version = "3.00.000"
+zone = "zc3_Top"
+plant = "STAC1"
 time_stp = "IST"
 w_sensor = "Disabled"
 s_sensor = "Disabled"
@@ -22,7 +22,7 @@ host = url[7:]
 port = 22
 username = 'torizon'
 password = 'sunshine'
-location = "Central"
+location = "BNG"
 
 
 def test_login_admin():
@@ -124,15 +124,15 @@ def test_zigbee_settings():
     login.login(admin_xpath, admin_pass)
     periodic_requests, heartbeat = login.zigbee_settings()
     assert periodic_requests == "600"
-    assert heartbeat == "10000"
+    assert heartbeat == "600"
 
 
 def test_stow_settings():
     login.initialize(driver_path, url)
     login.login(admin_xpath, admin_pass)
     w_speed, s_max, f_max = login.stow_settings()
-    assert w_speed == '15'
-    assert s_max == "300"
+    assert w_speed == '15.5'
+    assert s_max == "301"
     assert f_max == "300"
 
 
@@ -140,7 +140,7 @@ def test_time_settings():
     login.initialize(driver_path, url)
     login.login(admin_xpath, admin_pass)
     ntp_url = login.time_settings()
-    assert ntp_url == "0.debian.pool.ntp.org"
+    assert ntp_url == "0.ubuntu.pool.ntp.org"
 
 
 def test_board_temp():

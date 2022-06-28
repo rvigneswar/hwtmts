@@ -112,7 +112,7 @@ def dashboard():
                                       '//*[@id="root"]/div/div/div[1]/main/div[2]/div/div[2]/div[3]/div/div/div[2]/div[2]/h6').text
     flood_sensor = driver.find_element(By.XPATH,
                                        '//*[@id="root"]/div/div/div[1]/main/div[2]/div/div[2]/div[4]/div/div/div[2]/div[2]/h6').text
-    driver.implicitly_wait(wait_time * 1000)
+    time.sleep(2)
     for i in range(2, 7):
         driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[' + str(
             i) + ']/button').click()
@@ -124,8 +124,10 @@ def dashboard():
     driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/header/div/button[2]').click()
     driver.implicitly_wait(wait_time * 1000)
     driver.find_element(By.XPATH, '//*[@id="simple-menu"]/div[3]/ul/li[1]').click()
+    driver.implicitly_wait(wait_time*3000)
     user_checking = driver.find_element(By.XPATH,
                                         '//*[@id="root"]/div/div/div[1]/main/div[1]/div[1]/div/div/div/div[1]/h6').text
+    driver.implicitly_wait(wait_time*3000)
     driver.close()
     return zone_id, plant_id, time_stamp, wind_sensor, snow_sensor, flood_sensor, user_checking, add_tracker
 
@@ -327,4 +329,4 @@ def row_controller():
 # print(general_settings())
 # print(disk_usage("192.168.95.11", 22, "torizon", "sunshine"))
 # print(ram_usage("192.168.95.11", 22, "torizon", "sunshine"))
-print(checking_sd_card("192.168.95.11", 22, "torizon", "sunshine"))
+# print(checking_sd_card("192.168.95.11", 22, "torizon", "sunshine"))
