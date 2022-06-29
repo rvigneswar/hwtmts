@@ -133,7 +133,7 @@ def test_time_settings():
 def test_board_temp():
     login.initialize(driver_path, url)
     login.login(admin_xpath, admin_pass)
-    print("Board Temparature: " + login.board_temp()+" Celsius.")
+    print("Board Temperature: " + login.board_temp()+" Celsius.")
 
 
 def test_sensor_page():
