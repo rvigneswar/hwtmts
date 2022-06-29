@@ -28,12 +28,12 @@ location = "Bng"
 def test_hotspot():
     mac_id = login.get_macaddrs(host, port, username, password)
     result = login.hotspot_checking()
-    assert mac_id in str(result), "Mac ID is not found."
+    assert mac_id in str(result), "Mac ID displayed along with Voyager HOTSPOT is incorrect."
 
 
 def test_disk_ram_used():
-    print("Disk Used:" + login.disk_usage(host, port, username, password))
-    print("RAM Used:" + login.ram_usage(host, port, username, password))
+    print("Disk Used: " + login.disk_usage(host, port, username, password))
+    print("RAM Used: " + login.ram_usage(host, port, username, password))
 
 
 def test_checking_sd_card():
@@ -44,6 +44,10 @@ def test_checking_sd_card():
 def test_bluetooth():
     login.checking_bluetooth(host, port, username, password)
     assert True, "Bluetooth not Found."
+
+
+def test_cpu_temp():
+    print("CPU Temperature: " + str((int(login.checking_cpu_temp(host, port, username, password))/1000)) + " Celsius")
 
 # def test_login_invalid_password():
 #     login.initialize(driver_path, url)
@@ -86,13 +90,13 @@ def test_zigbee_pan_id():
     assert result, "Zigbee pan ID not found."
 
 
-def test_general_settings():
-    login.initialize(driver_path, url)
-    login.login(admin_xpath, admin_pass)
-    p_name, z_name, loc = login.general_settings()
-    assert p_name == plant, "Incorrect plant Name."
-    assert z_name == zone, "Incorrect Zone Name."
-    assert loc == location, "Incorrect Location."
+# def test_general_settings():
+#     login.initialize(driver_path, url)
+#     login.login(admin_xpath, admin_pass)
+#     p_name, z_name, loc = login.general_settings()
+#     assert p_name == plant, "Incorrect plant Name."
+#     assert z_name == zone, "Incorrect Zone Name."
+#     assert loc == location, "Incorrect Location."
 
 
 def test_dynamic_ip():
@@ -102,21 +106,21 @@ def test_dynamic_ip():
     assert d_ip, "Dynamic IP not found."
 
 
-def test_zigbee_settings():
-    login.initialize(driver_path, url)
-    login.login(admin_xpath, admin_pass)
-    periodic_requests, heartbeat = login.zigbee_settings()
-    assert periodic_requests == "600", "Check Periodic Requests."
-    assert heartbeat == "600", "Check Heartbeat"
+# def test_zigbee_settings():
+#     login.initialize(driver_path, url)
+#     login.login(admin_xpath, admin_pass)
+#     periodic_requests, heartbeat = login.zigbee_settings()
+#     assert periodic_requests == "600", "Check Periodic Requests."
+#     assert heartbeat == "600", "Check Heartbeat"
 
 
-def test_stow_settings():
-    login.initialize(driver_path, url)
-    login.login(admin_xpath, admin_pass)
-    w_speed, s_max, f_max = login.stow_settings()
-    assert w_speed == '15', "Check wind speed."
-    assert s_max == "300", "Check snow max settings."
-    assert f_max == "300", "Check Flood max Settings."
+# def test_stow_settings():
+#     login.initialize(driver_path, url)
+#     login.login(admin_xpath, admin_pass)
+#     w_speed, s_max, f_max = login.stow_settings()
+#     assert w_speed == '15', "Check wind speed."
+#     assert s_max == "300", "Check snow max settings."
+#     assert f_max == "300", "Check Flood max Settings."
 
 
 def test_time_settings():
@@ -141,11 +145,11 @@ def test_sensor_page():
     assert "Snow" in lst_sensor, "Snow Sensor not found."
 
 
-def test_download_log():
-    login.initialize(driver_path, url)
-    login.login(admin_xpath, admin_pass)
-    mess = login.download_logs()
-    assert mess == "Successfully downloaded the file.", "File not downloaded"
+# def test_download_log():
+#     login.initialize(driver_path, url)
+#     login.login(admin_xpath, admin_pass)
+#     mess = login.download_logs()
+#     assert mess == "Successfully downloaded the file.", "File not downloaded"
 
 
 # def test_red_alerts():

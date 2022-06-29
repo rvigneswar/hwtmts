@@ -301,6 +301,14 @@ def checking_bluetooth(host, port, uname, passwd):
             return False
 
 
+def checking_cpu_temp(host, port, uname, passwd):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, port, uname, passwd)
+    stdin, stdout, stderr = ssh.exec_command("cat /sys/class/thermal/thermal_zone0/temp")
+    temp = stdout.readline().split('\n')
+    return temp[0]
+
 def checking_serives():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
