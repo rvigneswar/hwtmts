@@ -22,7 +22,7 @@ host = url[7:]
 port = 22
 username = 'torizon'
 password = 'sunshine'
-location = "BNG"
+location = "Bng"
 
 
 def test_hotspot():
@@ -32,8 +32,8 @@ def test_hotspot():
 
 
 def test_disk_ram_used():
-    print(login.disk_usage(host, port, username, password))
-    print(login.ram_usage(host, port, username, password))
+    print("Disk Used:" + login.disk_usage(host, port, username, password))
+    print("RAM Used:" + login.ram_usage(host, port, username, password))
 
 
 def test_checking_sd_card():
@@ -115,7 +115,7 @@ def test_stow_settings():
     login.login(admin_xpath, admin_pass)
     w_speed, s_max, f_max = login.stow_settings()
     assert w_speed == '15', "Check wind speed."
-    assert s_max == "301", "Check snow max settings."
+    assert s_max == "300", "Check snow max settings."
     assert f_max == "300", "Check Flood max Settings."
 
 

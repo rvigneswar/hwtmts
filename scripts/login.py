@@ -86,6 +86,7 @@ def download_logs():
     for i in range(1, 4):
         driver.find_element(By.XPATH,
                             '//*[@id="root"]/div/div/div[1]/main/div[1]/div[1]/ul[1]/div[' + str(i) + ']').click()
+        time.sleep(3)
         message = driver.find_element(By.XPATH, '//*[@id="client-snackbar"]').text
     driver.close()
     return message
@@ -298,6 +299,7 @@ def checking_bluetooth(host, port, uname, passwd):
             return True
         else:
             return False
+
 
 def checking_serives():
     ssh = paramiko.SSHClient()
