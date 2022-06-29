@@ -5,10 +5,10 @@ from selenium.webdriver.common.by import By
 import time, subprocess, platform, paramiko, os
 
 wait_time = 3
-driver_path = "/Users/admin/FTC_Solar/Legacy/Hardware_team_test_Suite/driver/chromedriver"
-url = "http://192.168.95.11"
-admin_pass = "Admin"
-admin_xpath = '//*[@id="menu-username"]/div[3]/ul/li[1]'
+# driver_path = "/Users/admin/FTC_Solar/Legacy/Hardware_team_test_Suite/driver/chromedriver"
+# url = "http://192.168.95.11"
+# admin_pass = "Admin"
+# admin_xpath = '//*[@id="menu-username"]/div[3]/ul/li[1]'
 
 
 def initialize(wdriver, addrs):
@@ -299,25 +299,13 @@ def checking_bluetooth(host, port, uname, passwd):
         else:
             return False
 
-def row_controller():
-    driver.find_element(By.XPATH,
-                        '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[2]/button').click()
-    time.sleep(1)
-    check_box = driver.find_elements(By.XPATH,
-                                     '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[2]/div/div/table/tbody/tr[1]/td')
-    check_box[0].click()
-    driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[1]/div[3]/p[1]/button').click()
-    driver.find_element(By.XPATH, '//*[@id="simple-menu"]/div[3]/ul/li').click()
-    params = driver.find_elements(By.XPATH, '/html/body/div[3]/div[3]/div/div/div/div[2]/fieldset/div/div/label')
-    driver.implicitly_wait(2 + wait_time * 1000)
-    print(len(params))
-    driver.find_element(By.XPATH, '/html/body/div[3]/div[3]/div/div/div/div[2]/div/button').click()
-    driver.implicitly_wait(wait_time * 1000)
-    driver.find_element(By.XPATH, '/html/body/div[4]/div[3]/div/div/div/div[2]/div/button[1]').click()
-    driver.implicitly_wait(1000)
-    time.sleep(1)
-
-
+def checking_serives():
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, port, uname, passwd)
+    stdin, stdout, stderr = ssh.exec_command("docker exec -it web bash")
+    stdin, stdout, stderr = ssh.exec_command("cd ./install/app_config/service/files")
+    stdin, stdout, stderr = ssh.exec_command("")
 # initialize(driver_path, url)
 # login(admin_xpath, admin_pass)
 # print(zigbee_pad_ids())

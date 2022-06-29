@@ -7,13 +7,13 @@ if os_type == "nt":
     driver_path = str(os.getcwd()) + "/driver/chromedriver.exe"
 elif os_type == "posix":
     driver_path = str(os.getcwd()) + "/driver/chromedriver"
-url = "http://192.168.95.11"
+url = "http://192.168.95.8"
 admin_xpath = '//*[@id="menu-username"]/div[3]/ul/li[1]'
 admin_pass = "Admin"
 sw_version = "3.0.0"
 hw_version = "3.00.000"
-zone = "zc3_Top"
-plant = "STAC1"
+zone = "ZC_MID"
+plant = "PlantBng"
 time_stp = "IST"
 w_sensor = "Disabled"
 s_sensor = "Disabled"
@@ -25,52 +25,43 @@ password = 'sunshine'
 location = "BNG"
 
 
-def test_login_admin():
-    x = login.initialize(driver_path, url)
-    result = login.login(admin_xpath, admin_pass)
-    x.close()
-    assert result == zone
-
-
-def test_login_invalid_password():
-    login.initialize(driver_path, url)
-    result = login.login_invalid_password(admin_xpath, "xyz111")
-    assert result == '"Invalid password."'
-
-
-def test_login():
-    x = login.initialize(driver_path, url)
-    result = login.login(admin_xpath, admin_pass)
-    x.close()
-    assert result == zone
-
-
 def test_hotspot():
     mac_id = login.get_macaddrs(host, port, username, password)
     result = login.hotspot_checking()
     assert mac_id in str(result)
 
 
-def test_about_page():
-    login.initialize(driver_path, url)
-    login.login(admin_xpath, admin_pass)
-    version, hardware = login.about_page()
-    assert version == sw_version
-    assert hardware == hw_version
+def test_disk_ram_used():
+    print(login.disk_usage(host, port, username, password))
+    print(login.ram_usage(host, port, username, password))
 
 
-def test_download_log():
-    login.initialize(driver_path, url)
-    login.login(admin_xpath, admin_pass)
-    mess = login.download_logs()
-    assert mess == "Successfully downloaded the file."
+def test_checking_sd_card():
+    login.checking_sd_card(host, port, username, password)
 
 
-def test_red_alerts():
-    login.initialize(driver_path, url)
-    login.login(admin_xpath, admin_pass)
-    color = login.checking_alerts()
-    assert color == "rgba(255, 0, 0, 0.61)"
+def test_bluetooth():
+    login.checking_bluetooth(host, port, username, password)
+
+
+# def test_login_invalid_password():
+#     login.initialize(driver_path, url)
+#     result = login.login_invalid_password(admin_xpath, "xyz111")
+#     assert result == '"Invalid password."'
+#
+#
+# def test_login():
+#     x = login.initialize(driver_path, url)
+#     result = login.login(admin_xpath, admin_pass)
+#     x.close()
+#     assert result == zone
+
+
+def test_login_admin():
+    x = login.initialize(driver_path, url)
+    result = login.login(admin_xpath, admin_pass)
+    x.close()
+    assert result == zone
 
 
 def test_dashboard():
@@ -92,15 +83,6 @@ def test_zigbee_pan_id():
     login.login(admin_xpath, admin_pass)
     result = login.zigbee_pad_ids()
     assert result
-
-
-def test_sensor_page():
-    login.initialize(driver_path, url)
-    login.login(admin_xpath, admin_pass)
-    lst_sensor = login.sensor_page()
-    assert "Wind" in lst_sensor
-    assert "Flood" in lst_sensor
-    assert "Snow" in lst_sensor
 
 
 def test_general_settings():
@@ -149,14 +131,33 @@ def test_board_temp():
     print(login.board_temp()+" Cel")
 
 
-def test_disk_ram_used():
-    print(login.disk_usage(host, port, username, password))
-    print(login.ram_usage(host, port, username, password))
+def test_sensor_page():
+    login.initialize(driver_path, url)
+    login.login(admin_xpath, admin_pass)
+    lst_sensor = login.sensor_page()
+    assert "Wind" in lst_sensor
+    assert "Flood" in lst_sensor
+    assert "Snow" in lst_sensor
 
 
-def test_checking_sd_card():
-    login.checking_sd_card(host, port, username, password)
+def test_download_log():
+    login.initialize(driver_path, url)
+    login.login(admin_xpath, admin_pass)
+    mess = login.download_logs()
+    assert mess == "Successfully downloaded the file."
 
 
-def test_bluetooth():
-    login.checking_bluetooth(host, port, username, password)
+# def test_red_alerts():
+#     login.initialize(driver_path, url)
+#     login.login(admin_xpath, admin_pass)
+#     color = login.checking_alerts()
+#     assert color == "rgba(255, 0, 0, 0.61)"
+
+
+def test_about_page():
+    login.initialize(driver_path, url)
+    login.login(admin_xpath, admin_pass)
+    version, hardware = login.about_page()
+    assert version == sw_version
+    assert hardware == hw_version
+
