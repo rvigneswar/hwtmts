@@ -67,7 +67,7 @@ def hotspot_checking():
     elif operating_system == windows:
         i = 0
         while i <= 10:
-            devices = subprocess.check_output("netsh wlan show network | grep SSID", shell=True).decode().split("\r\n")
+            devices = subprocess.check_output('netsh wlan show network | find /I "SSID"', shell=True).decode().split("\r\n")
             time.sleep(2)
             i = i + 1
     return devices
