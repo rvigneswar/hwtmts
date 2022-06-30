@@ -6,7 +6,7 @@ import time, subprocess, platform, paramiko, os
 
 wait_time = 3
 # driver_path = "/Users/admin/FTC_Solar/Legacy/Hardware_team_test_Suite/driver/chromedriver"
-# url = "http://192.168.95.11"
+# url = "http://192.168.95.8"
 # admin_pass = "Admin"
 # admin_xpath = '//*[@id="menu-username"]/div[3]/ul/li[1]'
 
@@ -309,6 +309,7 @@ def checking_cpu_temp(host, port, uname, passwd):
     temp = stdout.readline().split('\n')
     return temp[0]
 
+
 def checking_serives():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -328,3 +329,4 @@ def checking_serives():
 # print(disk_usage("192.168.95.11", 22, "torizon", "sunshine"))
 # print(ram_usage("192.168.95.11", 22, "torizon", "sunshine"))
 # print(checking_sd_card("192.168.95.11", 22, "torizon", "sunshine"))
+
