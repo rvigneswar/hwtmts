@@ -65,7 +65,7 @@ def hotspot_checking():
     if operating_system == mac:
         devices = subprocess.check_output("networksetup -listpreferredwirelessnetworks en0", shell=True)
     elif operating_system == windows:
-        devices = subprocess.check_output("netsh wlan show network")
+        devices = subprocess.check_output("netsh wlan show network | grep SSID", shell=True)
     return devices
 
 
