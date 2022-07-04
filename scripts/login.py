@@ -2,13 +2,14 @@ import platform
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import time, subprocess, platform, paramiko, os
+from scp import SCPClient
+import time, subprocess, platform, paramiko, os, shutil
 
 wait_time = 3
-# driver_path = "/Users/admin/FTC_Solar/Legacy/Hardware_team_test_Suite/driver/chromedriver"
-# url = "http://192.168.95.8"
-# admin_pass = "Admin"
-# admin_xpath = '//*[@id="menu-username"]/div[3]/ul/li[1]'
+driver_path = "/Users/admin/FTC_Solar/Legacy/Hardware_team_test_Suite/driver/chromedriver"
+url = "http://192.168.95.13"
+admin_pass = "Admin"
+admin_xpath = '//*[@id="menu-username"]/div[3]/ul/li[1]'
 
 
 def initialize(wdriver, addrs):
@@ -67,7 +68,8 @@ def hotspot_checking():
     elif operating_system == windows:
         i = 0
         while i <= 10:
-            devices = subprocess.check_output('netsh wlan show network | find /I "SSID"', shell=True).decode().split("\r\n")
+            devices = subprocess.check_output('netsh wlan show network | find /I "SSID"', shell=True).decode().split(
+                "\r\n")
             time.sleep(2)
             i = i + 1
     return devices
@@ -126,13 +128,14 @@ def dashboard():
                         '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[1]/button').click()
     time.sleep(wait_time)
     add_tracker = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/button[1]').text
+
     driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/header/div/button[2]').click()
     driver.implicitly_wait(wait_time * 1000)
     driver.find_element(By.XPATH, '//*[@id="simple-menu"]/div[3]/ul/li[1]').click()
-    driver.implicitly_wait(wait_time*3000)
+    driver.implicitly_wait(wait_time * 3000)
     user_checking = driver.find_element(By.XPATH,
                                         '//*[@id="root"]/div/div/div[1]/main/div[1]/div[1]/div/div/div/div[1]/h6').text
-    driver.implicitly_wait(wait_time*3000)
+    driver.implicitly_wait(wait_time * 3000)
     driver.close()
     return zone_id, plant_id, time_stamp, wind_sensor, snow_sensor, flood_sensor, user_checking, add_tracker
 
@@ -143,11 +146,13 @@ def sensor_page():
     driver.implicitly_wait(wait_time * 1000)
     sensors_lst = driver.find_elements(By.XPATH,
                                        '//*[@id="root"]/div/div/div[1]/main/div[1]/div[2]/div/table/tbody/tr/td[3]')
-    sensors = []
-    for sensor in sensors_lst:
-        sensors.append(sensor.text)
+    sensors = [x.text for x in sensors_lst]
+    temp1 = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div[2]/div/table/tbody/tr/td[4]')
+    model_number = [x.text for x in temp1]
+    temp2 = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div[2]/div/table/tbody/tr/td[2]')
+    port_number = [x.text for x in temp2]
     driver.close()
-    return sensors
+    return sensors, model_number, port_number
 
 
 def general_settings():
@@ -187,14 +192,19 @@ def ethernet_settings():
     driver.find_element(By.XPATH,
                         '//*[@id="root"]/div/div/div[1]/nav/div[2]/div/div/div/div/div[2]/div/a[3]/button').click()
     driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/header/div/div/div/button[3]').click()
+    time.sleep(wait_time)
+    driver.find_element(By.XPATH,
+                        '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[2]/div[1]/div[2]/button[1]').click()
+    driver.implicitly_wait(2 + wait_time * 1000)
     dynamic_ip = driver.find_element(By.XPATH,
                                      '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div[2]/div[6]/div/input').get_attribute(
         "value")
+    time.sleep(wait_time)
     driver.close()
-    if dynamic_ip is None:
-        return False
+    if bool(dynamic_ip):
+        return True, dynamic_ip
     else:
-        return True
+        return False, dynamic_ip
 
 
 def stow_settings():
@@ -222,10 +232,10 @@ def time_settings():
     driver.implicitly_wait(wait_time * 1000)
     driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/header/div/div/div/button[5]').click()
     time.sleep(wait_time)
-    ntp_server = driver.find_element(By.XPATH,
-                                     '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div/div/ul/li[1]/div[1]').text
+    temp = driver.find_elements(By.XPATH, '//*[@id="root"]/div/div/div[1]/main/div[1]/div/div/div/ul/li')
     driver.close()
-    return ntp_server
+    ntp_servers = [x.text for x in temp]
+    return ntp_servers
 
 
 def board_temp():
@@ -314,15 +324,42 @@ def checking_cpu_temp(host, port, uname, passwd):
     return temp[0]
 
 
-def checking_serives():
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(host, port, uname, passwd)
-    stdin, stdout, stderr = ssh.exec_command("docker exec -it web bash")
-    stdin, stdout, stderr = ssh.exec_command("cd ./install/app_config/service/files")
-    stdin, stdout, stderr = ssh.exec_command("")
+def sensors_data(host, port, uname, password):
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(host, port, uname, password)
+    scp = SCPClient(client.get_transport())
+    os.makedirs("log")
+    sensor_logs = ["wind.log", "snow.log", "flood.log"]
+    for item in sensor_logs:
+        client.exec_command(f"docker cp web:/var/log/voyager/{item} ~/{item}")
+        time.sleep(10)
+        scp.get(item, f"./log/{item}")
+        client.exec_command(f"rm {item}")
+    with open(f"log/flood.log", "r") as file:
+        flood_values = file.readlines()[-3]
+    # print("flood: " + values)
+    with open("log/snow.log", "r") as file:
+        snow_value = file.readlines()[-2]
+    # print("Snow: " + line)
+    shutil.rmtree("log")
+    return flood_values, snow_value
+
+
+
+# def checking_serives(host, port, uname, passwd):
+#     ssh = paramiko.SSHClient()
+#     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+#     ssh.connect(host, port, uname, passwd)
+#     stdin, stdout, stderr = ssh.exec_command("docker exec -it web bash")
+#     stdin, stdout, stderr = ssh.exec_command("cd ./install/app_config/service/files")
+#     stdin, stdout, stderr = ssh.exec_command("")
+
+
 # initialize(driver_path, url)
 # login(admin_xpath, admin_pass)
+# print(time_settings())
+# print(ethernet_settings())
 # print(zigbee_pad_ids())
 # print(get_macaddrs("192.168.0.112", 22, "torizon", "sunshine"))
 # print(hotspot_checking())
@@ -333,4 +370,3 @@ def checking_serives():
 # print(disk_usage("192.168.95.11", 22, "torizon", "sunshine"))
 # print(ram_usage("192.168.95.11", 22, "torizon", "sunshine"))
 # print(checking_sd_card("192.168.95.11", 22, "torizon", "sunshine"))
-

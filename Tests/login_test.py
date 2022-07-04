@@ -7,13 +7,13 @@ if os_type == "nt":
     driver_path = str(os.getcwd()) + "/driver/chromedriver.exe"
 elif os_type == "posix":
     driver_path = str(os.getcwd()) + "/driver/chromedriver"
-url = "http://192.168.95.8"
+url = "http://192.168.95.10"
 admin_xpath = '//*[@id="menu-username"]/div[3]/ul/li[1]'
 admin_pass = "Admin"
 sw_version = "3.0.0"
 hw_version = "3.00.000"
-zone = "ZC_MID"
-plant = "PlantBng"
+zone = "default_ID"
+plant = "STAC"
 time_stp = "IST"
 w_sensor = "Disabled"
 s_sensor = "Disabled"
@@ -22,7 +22,7 @@ host = url[7:]
 port = 22
 username = 'torizon'
 password = 'sunshine'
-location = "Bng"
+location = "Central"
 
 
 def test_hotspot():
@@ -102,8 +102,9 @@ def test_zigbee_pan_id():
 def test_dynamic_ip():
     login.initialize(driver_path, url)
     login.login(admin_xpath, admin_pass)
-    d_ip = login.ethernet_settings()
-    assert d_ip, "Dynamic IP not found."
+    res, d_ip = login.ethernet_settings()
+    print("Dynamic IP assigned to this ZC: " + d_ip)
+    assert res, "Dynamic IP not found."
 
 
 # def test_zigbee_settings():
@@ -126,8 +127,10 @@ def test_dynamic_ip():
 def test_time_settings():
     login.initialize(driver_path, url)
     login.login(admin_xpath, admin_pass)
-    ntp_url = login.time_settings()
-    assert ntp_url == "0.ubuntu.pool.ntp.org", "Check NTP url"
+    ntp_urls = login.time_settings()
+    known_urls = ['0.ubuntu.pool.ntp.org', '1.ubuntu.pool.ntp.org', '2.ubuntu.pool.ntp.org', '3.ubuntu.pool.ntp.org']
+    print("Found urls in ZC: ", ntp_urls)
+    assert ntp_urls[1] in known_urls, "Check NTP url"
 
 
 def test_board_temp():
@@ -139,7 +142,9 @@ def test_board_temp():
 def test_sensor_page():
     login.initialize(driver_path, url)
     login.login(admin_xpath, admin_pass)
-    lst_sensor = login.sensor_page()
+    lst_sensor, model_number, port_number = login.sensor_page()
+    dictionary = {i: [j, k] for i, j, k in zip(lst_sensor, model_number, port_number)}
+    print(dictionary)
     assert "Wind" in lst_sensor, "Wind sensor not found."
     assert "Flood" in lst_sensor, "Flood Sensor not found."
     assert "Snow" in lst_sensor, "Snow Sensor not found."
@@ -166,3 +171,7 @@ def test_about_page():
     assert version == sw_version, "Check Software version"
     assert hardware == hw_version, "Check hardware version"
 
+
+def test_sensor_data():
+    flood_value, snow_value = login.sensors_data(host, port, username, password)
+    print(f"Flood: {flood_value} \n Snow: {snow_value}")
