@@ -173,5 +173,5 @@ def test_about_page():
 
 
 def test_sensor_data():
-    flood_value, snow_value = login.sensors_data(host, port, username, password)
-    print(f"Flood: {flood_value} \n Snow: {snow_value}")
+    flood_value, snow_value, wind_value = login.sensors_data(host, port, username, password)
+    print(f"Flood: {flood_value} \n Snow: {snow_value} \n Wind: {wind_value}")

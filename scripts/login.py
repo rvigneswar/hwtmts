@@ -342,8 +342,10 @@ def sensors_data(host, port, uname, password):
     with open("log/snow.log", "r") as file:
         snow_value = file.readlines()[-2]
     # print("Snow: " + line)
+    with open("log/wind.log", "r") as file:
+        wind_value = file.readlines()[-1]
     shutil.rmtree("log")
-    return flood_values, snow_value
+    return flood_values, snow_value, wind_value
 
 
 
